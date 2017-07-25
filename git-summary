@@ -1,7 +1,7 @@
 #!/bin/bash
 # Bradford Smith
 # git-summary
-# 07/20/2017
+# 07/25/2017
 # Print a summary of git author contributions
 
 # shellcheck disable=2034
@@ -15,16 +15,30 @@ require_work_tree
 
 # https://stackoverflow.com/a/9271406
 function _parseArgs() {
+    given_author=false
+
     while [ "$1" != "" ]; do
         case $1 in
             "--after" | "--since")
-                shift
+                #shift
                 ;;
             "--before" | "--until")
+                #shift
+                ;;
+            *)
+                #anything else is should be an author
+                given_author=true
+                break
                 ;;
         esac
         shift
     done
+
+    if [ $given_author ]; then
+        _summary "$1"
+    else
+        _summary
+    fi
 }
 
 function _summary() {
@@ -56,4 +70,3 @@ function _summary() {
 }
 
 _parseArgs "$@"
-_summary "$1"
