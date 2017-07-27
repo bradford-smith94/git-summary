@@ -1,0 +1,23 @@
+#!/bin/sh
+# Bradford Smith
+# configure script for git-summary
+# 07/27/2017
+##################################
+
+out=Makefile.in
+
+for arg in "$@"; do
+    case "$arg" in
+        --prefix=*)
+            prefix=$(echo "$arg" | sed 's/--prefix=//')
+            echo "PREFIX=$prefix" > "$out"
+            ;;
+        --help)
+            echo 'usage: ./configure [options]'
+            echo 'options:'
+            echo '      --prefix=<path>: installation prefix'
+            echo 'anything else is silently ignored'
+            ;;
+    esac
+done
+
