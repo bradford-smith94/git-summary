@@ -1,7 +1,7 @@
 #!/bin/bash
 # Bradford Smith
 # git-summary
-# 07/25/2017
+# 07/28/2017
 # Print a summary of git author contributions
 
 # shellcheck disable=2034
@@ -18,12 +18,14 @@ function _parseArgs() {
     given_author=false
 
     while [ "$1" != "" ]; do
-        case $1 in
-            "--after" | "--since")
-                #shift
+        case "$1" in
+            --after=* | --since=*)
+                #shellcheck disable=2001
+                begin=$(echo "$1" | sed 's/--\w*=//')
                 ;;
-            "--before" | "--until")
-                #shift
+            --before=* | --until=*)
+                #shellcheck disable=2001
+                end=$(echo "$1" | sed 's/--\w*=//')
                 ;;
             *)
                 #anything else is should be an author
