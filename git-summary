@@ -13,62 +13,60 @@ source "$(git --exec-path)/git-sh-setup"
 
 require_work_tree
 
+# parse arguments
 # https://stackoverflow.com/a/9271406
-function _parseArgs() {
-    given_author=false
+while [ "$1" != "" ]; do
+    case "$1" in
+        --after=* | --since=*)
+            #shellcheck disable=2001
+            begin=$(echo "$1" | sed 's/--\w*=//')
+            ;;
+        --before=* | --until=*)
+            #shellcheck disable=2001
+            end=$(echo "$1" | sed 's/--\w*=//')
+            ;;
+        *)
+            #anything else is should be an author, break the while
+            break
+            ;;
+    esac
+    #shift to the next parameter
+    shift
+done
 
-    while [ "$1" != "" ]; do
-        case "$1" in
-            --after=* | --since=*)
-                #shellcheck disable=2001
-                begin=$(echo "$1" | sed 's/--\w*=//')
-                ;;
-            --before=* | --until=*)
-                #shellcheck disable=2001
-                end=$(echo "$1" | sed 's/--\w*=//')
-                ;;
-            *)
-                #anything else is should be an author
-                given_author=true
-                break
-                ;;
-        esac
-        shift
-    done
-
-    if [ $given_author ]; then
-        _summary "$1"
-    else
-        _summary
+# setup AUTHORS
+if [ -n "$1" ]; then
+    #author provided
+    AUTHORS=$(git log -i -1 --pretty="format:%aN" --author="$1")
+    if [ -z "$AUTHORS" ]; then
+        die "fatal: ambiguous argument '$1': unknown author."
     fi
-}
+else
+    #no author provided, run for all of them
+    AUTHORS=$(git shortlog -n -s --no-merges | colrm 1 8)
+fi
 
-function _summary() {
-    if [ -n "$1" ]; then
-        #author provided
-        AUTHORS=$(git log -i -1 --pretty="format:%aN" --author="$1")
-        if [ -z "$AUTHORS" ]; then
-            die "fatal: ambiguous argument '$1': unknown author."
-        fi
-    else
-        #no author provided, run for all of them
-        AUTHORS=$(git shortlog -n -s --no-merges | colrm 1 8)
-    fi
+# setup git log options
+opts=""
+if [ -n "$begin" ]; then
+    opts+="--after=$begin"
+fi
+if [ -n "$end" ]; then
+    opts+=" --before=$end"
+fi
 
-    while read -r author; do
-        commits=$(git log --no-merges --oneline --use-mailmap --author="$author" | wc -l | tr -d '\n')
-        files=$(git log --no-merges --use-mailmap --author="$author" --name-only --pretty=format:"" | sort -u | sed '/^$/d' | wc -l | tr -d '\n')
-        adds=$(git log --no-merges --use-mailmap --author="$author" --pretty=tformat: --numstat | awk '{ add+=$1 } END { printf "%s", add }')
-        subs=$(git log --no-merges --use-mailmap --author="$author" --pretty=tformat: --numstat | awk '{ subs+=$2 } END { printf "%s", subs }')
+# print summary
+while read -r author; do
+    commits=$(git log "$opts" --no-merges --oneline --use-mailmap --author="$author" | wc -l | tr -d '\n')
+    files=$(git log "$opts" --no-merges --use-mailmap --author="$author" --name-only --pretty=format:"" | sort -u | sed '/^$/d' | wc -l | tr -d '\n')
+    adds=$(git log "$opts" --no-merges --use-mailmap --author="$author" --pretty=tformat: --numstat | awk '{ add+=$1 } END { printf "%s", add }')
+    subs=$(git log "$opts" --no-merges --use-mailmap --author="$author" --pretty=tformat: --numstat | awk '{ subs+=$2 } END { printf "%s", subs }')
 
-        printf "%s: %s commits\n%s files changed, %s insertions(+), %s deletions(-)\n" \
-            "$author" \
-            "$(numfmt --grouping "$commits")" \
-            "$(numfmt --grouping "$files")" \
-            "$(numfmt --grouping "$adds")" \
-            "$(numfmt --grouping "$subs")"
+    printf "%s: %s commits\n%s files changed, %s insertions(+), %s deletions(-)\n" \
+        "$author" \
+        "$(numfmt --grouping "$commits")" \
+        "$(numfmt --grouping "$files")" \
+        "$(numfmt --grouping "$adds")" \
+        "$(numfmt --grouping "$subs")"
 
-    done <<< "$AUTHORS"
-}
-
-_parseArgs "$@"
+done <<< "$AUTHORS"
