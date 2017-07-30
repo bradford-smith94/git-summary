@@ -1,0 +1,31 @@
+.TH GIT-SUMMARY 1 "JULY 2017" v1.1.0 "Git-Summary Manual"
+.SH NAME
+git-summary \- Print a summary of git author contributions
+
+.SH SYNOPSIS
+.I git summary
+[<options>] [<author>]
+
+.SH DESCRIPTION
+Print a summary of git author contributions.
+.PP
+The command also takes select options that are directly passed to
+.BR git-log (1).
+
+.SH OPTIONS
+.TP
+.BR \-\-after=<date> ", " \-\-since=<date>
+Print a summary of commits more recent than a specific date.
+.TP
+.BR \-\-until=<date> ", " \-\-before=<date>
+Print a summary of commits older than a specific date.
+.TP
+.BR \-\-help
+If given first opens this manpage, else prints a usage message.
+
+.SH AUTHOR
+Bradford Smith <bradford dot smith nine four at gmail dot com>
+
+.SH "SEE ALSO"
+.BR git (1)
+.BR git-log (1)

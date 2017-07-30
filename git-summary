@@ -1,17 +1,23 @@
 #!/bin/bash
 # Bradford Smith
 # git-summary
-# 07/28/2017
+# 07/29/2017
 # Print a summary of git author contributions
 
 # shellcheck disable=2034
-USAGE="[<author>]"
+USAGE="[<options>] [<author>]"
 SUBDIRECTORY_OK=true
 
 # shellcheck source=/dev/null
 source "$(git --exec-path)/git-sh-setup"
 
 require_work_tree
+
+# if help is the first option open the manpage
+if [ "$1" == "--help" ]; then
+    man git-summary
+    exit
+fi
 
 # parse arguments
 # https://stackoverflow.com/a/9271406
@@ -24,6 +30,10 @@ while [ "$1" != "" ]; do
         --before=* | --until=*)
             #shellcheck disable=2001
             end=$(echo "$1" | sed 's/--\w*=//')
+            ;;
+        --help)
+            #if help is given somewhere other than first print usage
+            usage
             ;;
         *)
             #anything else is should be an author, break the while
