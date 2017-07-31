@@ -1,7 +1,7 @@
 #!/bin/bash
 # Bradford Smith
 # git-summary
-# 07/29/2017
+# 07/31/2017
 # Print a summary of git author contributions
 
 # shellcheck disable=2034
@@ -57,24 +57,28 @@ else
 fi
 
 # setup git log options
-opts=""
+opts=()
 if [ -n "$begin" ]; then
-    opts+="--after=$begin"
+    opts+=("--after=\"$begin\"")
 fi
 if [ -n "$end" ]; then
-    opts+=" --before=$end"
+    opts+=("--before=\"$end\"")
 fi
 
 # print summary
 while read -r author; do
-    #shellcheck disable=2086
-    commits=$(git log $opts --no-merges --oneline --use-mailmap --author="$author" | wc -l | tr -d '\n')
-    #shellcheck disable=2086
-    files=$(git log $opts --no-merges --use-mailmap --author="$author" --name-only --pretty=format:"" | sort -u | sed '/^$/d' | wc -l | tr -d '\n')
-    #shellcheck disable=2086
-    adds=$(git log $opts --no-merges --use-mailmap --author="$author" --pretty=tformat: --numstat | awk '{ add+=$1 } END { printf "%s", add }')
-    #shellcheck disable=2086
-    subs=$(git log $opts --no-merges --use-mailmap --author="$author" --pretty=tformat: --numstat | awk '{ subs+=$2 } END { printf "%s", subs }')
+    commits=$(git log "${opts[@]}" --no-merges --oneline --use-mailmap --author="$author" | wc -l | tr -d '\n')
+    files=$(git log "${opts[@]}" --no-merges --use-mailmap --author="$author" --name-only --pretty=format:"" | sort -u | sed '/^$/d' | wc -l | tr -d '\n')
+    adds=$(git log "${opts[@]}" --no-merges --use-mailmap --author="$author" --pretty=tformat: --numstat | awk '{ add+=$1 } END { printf "%s", add }')
+    subs=$(git log "${opts[@]}" --no-merges --use-mailmap --author="$author" --pretty=tformat: --numstat | awk '{ subs+=$2 } END { printf "%s", subs }')
+
+    #fix empty adds and subs so numfmt doesn't complain
+    if [ -z "$adds" ]; then
+        adds="0"
+    fi
+    if [ -z "$subs" ]; then
+        subs="0"
+    fi
 
     printf "%s: %s commits\n%s files changed, %s insertions(+), %s deletions(-)\n" \
         "$author" \
