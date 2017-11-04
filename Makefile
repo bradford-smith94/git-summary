@@ -1,12 +1,14 @@
 # Bradford Smith
 # Makefile for git-summary
-# 07/29/2017
+# 11/04/2017
 ################################################################################
 
 PREFIX ?= /usr/local
+LICENSEPREFIX ?= "$(PREFIX)/share/licenses"
 MANPREFIX ?= "$(PREFIX)/share/man/man1"
 
 PRG = git-summary
+LICENSE = LICENSE
 MAN = man/git-summary.1
 RM = rm -f
 
@@ -26,10 +28,12 @@ clean:
 
 dry-run:
 	@echo "Running 'make install' would install $(PRG) to $(DESTDIR)$(PREFIX)/bin"
+	@echo "        and $(LICENSE) to $(DESTDIR)$(LICENSEPREFIX)"
 	@echo "        and $(MAN) to $(DESTDIR)$(MANPREFIX)"
 
 install:
 	install -Dm 0755 $(PRG) -t $(DESTDIR)$(PREFIX)/bin
+	install -Dm 0644 $(LICENSE) -t $(DESTDIR)$(LICENSEPREFIX)
 	install -Dm 0644 $(MAN) -t $(DESTDIR)$(MANPREFIX)
 
 uninstall:
