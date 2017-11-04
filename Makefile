@@ -28,12 +28,12 @@ clean:
 
 dry-run:
 	@echo "Running 'make install' would install $(PRG) to $(DESTDIR)$(PREFIX)/bin"
-	@echo "        and $(LICENSE) to $(DESTDIR)$(LICENSEPREFIX)"
+	@echo "        and $(LICENSE) to $(DESTDIR)$(LICENSEPREFIX)/$(PRG)"
 	@echo "        and $(MAN) to $(DESTDIR)$(MANPREFIX)"
 
 install:
 	install -Dm 0755 $(PRG) -t $(DESTDIR)$(PREFIX)/bin
-	install -Dm 0644 $(LICENSE) -t $(DESTDIR)$(LICENSEPREFIX)
+	install -Dm 0644 $(LICENSE) -t $(DESTDIR)$(LICENSEPREFIX)/$(PRG)
 	install -Dm 0644 $(MAN) -t $(DESTDIR)$(MANPREFIX)
 
 uninstall:
