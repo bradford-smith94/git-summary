@@ -1,4 +1,4 @@
-.TH GIT-SUMMARY 1 "31 JULY 2017" v1.1.2 "Git-Summary Manual"
+.TH GIT-SUMMARY 1 "28 MARCH 2018" v1.2.0 "Git-Summary Manual"
 .SH NAME
 git-summary \- Print a summary of git author contributions
 
@@ -7,10 +7,17 @@ git-summary \- Print a summary of git author contributions
 [<options>] [<author>]
 
 .SH DESCRIPTION
-Print a summary of git author contributions.
+Print a summary of git author contributions. If an author is given the output
+will only include information about the contributions of that author. In the
+case that no author is given the default behavior is to print out information on
+the contributions of all authors.
 .PP
-The command also takes select options that are directly passed to
+The command also takes a select set of options that are directly passed to
 .BR git-log (1).
+.PP
+.B Note:
+git-summary is not a part of (or affiliated with)
+.BR git (1).
 
 .SH OPTIONS
 .TP
@@ -23,9 +30,24 @@ Print a summary of commits older than a specific date.
 .BR \-\-help
 If given first opens this manpage, else prints a usage message.
 
+.SH COLORS
+The command uses
+.BR git-config (1)
+to decide whether or not to print in colors (using the value of color.ui). If
+git decides to print in colors the author additions print using the value of
+color.diff.new (defaulting to green) and author deletions print using the value
+of color.diff.old (defaulting to red).
+
 .SH AUTHOR
 Bradford Smith <bradford dot smith nine four at gmail dot com>
 
+.SH LICENSE
+MIT.
+
+.SH BUGS
+Please report bugs at: <https://github.com/bradford-smith94/git-summary/issues>.
+
 .SH "SEE ALSO"
 .BR git (1)
+.BR git-config (1)
 .BR git-log (1)

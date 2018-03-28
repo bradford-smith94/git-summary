@@ -71,6 +71,20 @@ if [ -n "$end" ]; then
     opts+=("--before=\"$end\"")
 fi
 
+# setup colors
+# this uses git itself to tell us whether or not we should print in color, if we
+# can it gets the color values from git with default values in case the color
+# options are not specified in the user's git config
+if git config --get-colorbool color.ui; then
+    ADD_COLOR=$(git config --get-color color.diff.new "green")
+    SUB_COLOR=$(git config --get-color color.diff.old "red")
+    RESET=$(git config --get-color "" "reset")
+else
+    ADD_COLOR=""
+    SUB_COLOR=""
+    RESET=""
+fi
+
 # print summary for each author
 while read -r author; do
     commits=$(git log "${opts[@]}" --no-merges --oneline --use-mailmap --author="$author" | wc -l | tr -d '\n')
@@ -86,7 +100,7 @@ while read -r author; do
         subs="0"
     fi
 
-    printf "%s: %s commits\\n%s files changed, %s insertions(+), %s deletions(-)\\n" \
+    printf "%s: %s commits\\n%s files changed, $ADD_COLOR%s insertions(+)$RESET, $SUB_COLOR%s deletions(-)$RESET\\n" \
         "$author" \
         "$(numfmt --grouping "$commits")" \
         "$(numfmt --grouping "$files")" \
