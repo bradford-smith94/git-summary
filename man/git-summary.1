@@ -7,10 +7,12 @@ git-summary \- Print a summary of git author contributions
 [<options>] [<author>]
 
 .SH DESCRIPTION
-Print a summary of git author contributions. If an author is given the output
-will only include information about the contributions of that author. In the
-case that no author is given the default behavior is to print out information on
-the contributions of all authors.
+Print a summary of git author contributions, specifically the number of commits
+they made, along with how many files have been changed and the number of
+additions and deletions. If an author is given the output will only include
+information about the contributions of that author. In the case that no author
+is given the default behavior is to print out information on the contributions
+of all authors.
 .PP
 The command also takes a select set of options that are directly passed to
 .BR git-log (1).
