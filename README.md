@@ -29,6 +29,9 @@ You can provide a select set of options which are used directly by `git log`.
 - `--until=<date>`/`--before=<date>`
     - Only show a summary of commits older than the given date.
 
+- `-w`
+    - Ignore whitespace changes when providing summary
+
 See the included manpage for more (`man git-summary`).
 
 ### Colors
